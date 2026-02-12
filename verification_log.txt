@@ -1,0 +1,27 @@
+Starting Verification...
+Testing Hardcoded Credentials...
+Analysis:
+- **Type**: Hardcoded Credentials
+- **Severity**: High
+- **Line**: 2
+- **Description**: The database connection string includes hardcoded username ('admin') and password ('password123'). This is a major security risk as anyone with access to the code can obtain these credentials.
+
+✅ Detected Hardcoded Credentials
+Fixed Code:
+import os
+from somewhere import connect # Assuming 'connect' is a database connection function
+
+def connect_db():
+    # Retrieve database credentials from environment variables.
+    # This prevents hardcoding sensitive information in the code.
+    db_user = os.environ.get("DB_USER")
+    db_password = os.environ.get("DB_PASSWORD")
+
+    # Check if environment variables are set.  If not, raise an exception or use a default (less secure)
+    if not db_user or not db_password:
+        raise EnvironmentError("DB_USER and DB_PASSWORD environment variables must be set.")
+
+    # Construct the connection string using the retrieved credentials.
+    conn = connect(f"user='{db_user}', password='{db_password}'") #Note: This is still vulnerable to injection if the `connect` function doesn't handle the inputs correctly, ideally `connect` should take user/pass as separate arguments.
+    return conn
+✅ Fix uses environment variables
